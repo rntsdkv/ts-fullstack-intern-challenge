@@ -3,7 +3,7 @@ info:
   title: API сервиса для тестового задания
   version: 0.1.0
 tags:
-  - name: cats
+  - name: likes
     description: Всё что касается котиков
   - name: users
     description: Всё что касается пользователей
@@ -13,7 +13,7 @@ paths:
       security:
         - bearerAuth: [ ]
       tags:
-        - cats
+        - likes
       summary: Список лайков
       operationId: listLikes
       responses:
@@ -32,7 +32,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - cats
+        - likes
       summary: Добавление лайка
       operationId: newLike
       requestBody:
@@ -56,7 +56,7 @@ paths:
       security:
         - bearerAuth: [ ]
       tags:
-        - cats
+        - likes
       summary: Удаление лайка
       operationId: dropLike
       parameters:
