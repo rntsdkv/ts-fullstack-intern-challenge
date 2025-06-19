@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Like } from './like.entity';
-import { AppDataSource } from '../data-source';
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
 
 @Injectable()
 export class LikesService {
-  private likeRepository = AppDataSource.getRepository(Like);
+  constructor(
+    @InjectRepository(Like)
+    private likeRepository: Repository<Like>,
+  ) {}
 
   async getAllLikes(): Promise<Like[]> {
     return this.likeRepository.find();

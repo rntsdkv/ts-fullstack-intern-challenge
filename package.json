@@ -9,6 +9,7 @@
     "typeorm": "^0.3.24"
   },
   "devDependencies": {
+    "@types/passport-jwt": "^4.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

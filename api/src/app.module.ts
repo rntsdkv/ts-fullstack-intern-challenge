@@ -26,6 +26,7 @@ import {AuthModule} from "./auth/auth.module";
       database: db_database,
       entities: [User, Like],
       synchronize: true,
+      autoLoadEntities: true,
     }),
     TypeOrmModule.forFeature([User, Like]),
     AuthModule,

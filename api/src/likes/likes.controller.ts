@@ -1,5 +1,6 @@
-import {Body, Controller, Delete, Get, Param, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, UnauthorizedException, UseGuards} from '@nestjs/common';
 import { LikesService } from './likes.service';
+import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 
 
 
@@ -7,9 +8,17 @@ import { LikesService } from './likes.service';
 export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   getLikes() {
-    return this.likesService.getAllLikes();
+    try {
+      return this.likesService.getAllLikes();
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException('Вы не авторизованы');
+      }
+      throw error;
+    }
   }
 
   @Post()
