@@ -1,2 +1,4 @@
 .idea
 node_modules
+api/src/config.ts
+api/src/auth/constants.ts
