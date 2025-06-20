@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {IsNotEmpty} from "class-validator";
 
 @Entity()
 export class Like {
@@ -6,11 +7,12 @@ export class Like {
   id: number;
 
   @Column({ nullable: false })
+  @IsNotEmpty()
   cat_id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, select: false })
   user_login: string;
 
-  @Column()
+  @Column({ nullable: true })
   created_at: Date;
 }

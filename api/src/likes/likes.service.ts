@@ -1,49 +1,56 @@
-import { Injectable } from '@nestjs/common';
-import { Like } from './like.entity';
+import {BadRequestException, ConflictException, Injectable, NotFoundException} from '@nestjs/common';
+import { CreateLikeDto } from './dto/create-like.dto';
 import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import { Repository } from 'typeorm';
+import {Like} from "./entities/like.entity";
+import {User} from "../users/entities/user.entity";
+import {validate} from "class-validator";
 
 @Injectable()
 export class LikesService {
   constructor(
     @InjectRepository(Like)
-    private likeRepository: Repository<Like>,
+    private likesRepository: Repository<Like>,
   ) {}
 
-  async getAllLikes(): Promise<Like[]> {
-    return this.likeRepository.find();
+  async create(createLikeDto: CreateLikeDto, user: User) {
+    const newLike = this.likesRepository.create({
+      cat_id: createLikeDto.cat_id,
+      user_login: user.login,
+    });
+
+    const errors = await validate(newLike);
+
+    if (errors.length > 0) {
+      throw new BadRequestException('Invalid input');
+    }
+
+    if ((await this.findOne(newLike.user_login, newLike.cat_id)) !== null) {
+      throw new ConflictException('Like already exists');
+    }
+
+    return this.likesRepository.save(newLike);
   }
 
-  async getLike(cat_id: string, user_login: string): Promise<Like | null> {
-    return this.likeRepository.findOne({
-      where: {
-        cat_id: cat_id,
-        user_login: user_login,
-      },
+  findAll() {
+    return this.likesRepository.find();
+  }
+
+  async findOne(login: string, cat_id: string): Promise<Like | null> {
+    return this.likesRepository.findOneBy({
+      cat_id: cat_id,
+      user_login: login,
     });
   }
 
-  async postLike(cat_id: string, user_login: string): Promise<Like | null> {
-    const like = await this.getLike(cat_id, user_login);
+  async remove(cat_id: string, user: User) {
+    const like = await this.findOne(user.login, cat_id);
 
-    if (!like) {
-      const newLike = this.likeRepository.create({
-        cat_id: cat_id,
-        user_login: user_login,
-      });
-      return this.likeRepository.save(newLike);
-    }
-
-    return null;
-  }
-
-  async deleteLike(cat_id: string, user_login: string): Promise<boolean> {
-    const like = await this.getLike(cat_id, user_login);
-    if (like) {
-      await this.likeRepository.delete(like);
+    if (like !== null) {
+      await this.likesRepository.delete(like.id);
       return true;
     }
 
-    return false;
+    throw new NotFoundException('Like not found');
   }
 }

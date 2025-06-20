@@ -1,31 +1,41 @@
-import {Body, Controller, Delete, Get, Param, Post, UnauthorizedException, UseGuards} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards, HttpCode, HttpStatus, Request,
+} from '@nestjs/common';
 import { LikesService } from './likes.service';
-import {JwtAuthGuard} from "../auth/jwt-auth.guard";
-
-
+import { CreateLikeDto } from './dto/create-like.dto';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Controller('likes')
 export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
+  @HttpCode(201)
   @Get()
-  getLikes() {
-    try {
-      return this.likesService.getAllLikes();
-    } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw new UnauthorizedException('Вы не авторизованы');
-      }
-      throw error;
-    }
+  findAll() {
+    return this.likesService.findAll();
   }
 
+  @UseGuards(AuthGuard)
   @Post()
-  setLike(@Body() body: { cat_id: string }) {
-    // return this.likesService.postLike(body.cat_id)
+  create(@Request() request, @Body() createLikeDto: CreateLikeDto) {
+    return this.likesService.create(createLikeDto, request.user);
   }
 
+  @UseGuards(AuthGuard)
+  @HttpCode(200)
   @Delete(':id')
-  deleteLike(@Param('id') cat_id: number) {}
+  async remove(@Request() request, @Param('id') id: string) {
+    await this.likesService.remove(id, request.user);
+    return {
+      message: 'Successful operation',
+      statusCode: HttpStatus.OK,
+    };
+  }
 }

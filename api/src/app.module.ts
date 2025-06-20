@@ -10,10 +10,10 @@ import {
   db_password,
   db_database,
 } from './config';
-import {User} from "./users/user.entity";
-import {Like} from "typeorm";
-import {TypeOrmModule} from "@nestjs/typeorm";
-import {AuthModule} from "./auth/auth.module";
+import { User } from './users/entities/user.entity';
+import { DataSource, Like } from 'typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -28,7 +28,6 @@ import {AuthModule} from "./auth/auth.module";
       synchronize: true,
       autoLoadEntities: true,
     }),
-    TypeOrmModule.forFeature([User, Like]),
     AuthModule,
     LikesModule,
     UsersModule,
@@ -36,4 +35,6 @@ import {AuthModule} from "./auth/auth.module";
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}
