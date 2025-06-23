@@ -17,11 +17,11 @@ export class AuthService {
     const user = await this.usersService.findOne(login);
 
     if (user === null) {
-      throw new BadRequestException('Invalid login');
+      throw new BadRequestException('Неверный логин');
     }
 
     if (!(await argon2.verify(String(user.password), String(password_)))) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Неверный пароль');
     }
 
     const payload = { login: user.login };

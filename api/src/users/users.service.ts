@@ -21,7 +21,7 @@ export class UsersService {
     }
 
     if ((await this.findOne(loginDto.login)) !== null) {
-      throw new ConflictException('Login already exists');
+      throw new ConflictException('Такой логин уже используется');
     }
 
     const newUser = this.usersRepository.create({
