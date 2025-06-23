@@ -1,7 +1,7 @@
 import {useRef, useState} from "react"
 import { signIn, signUp } from '../api.ts'
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 export default function Auth(props: {isRegistration: boolean}) {
   const [login, setLogin] = useState<string>("")
@@ -79,6 +79,13 @@ export default function Auth(props: {isRegistration: boolean}) {
         <button onClick={makeAuth}>
           {props.isRegistration ? "Зарегистрироваться" : "Войти"}
         </button>
+        {props.isRegistration ?
+          <Link to='/login'>
+            Войти
+          </Link>
+          : <Link to='/register'>
+            Зарегистрироваться
+          </Link>}
       </div>
     </div>
   )
