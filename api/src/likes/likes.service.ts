@@ -16,13 +16,15 @@ export class LikesService {
   async create(createLikeDto: CreateLikeDto, user: User) {
     const newLike = this.likesRepository.create({
       cat_id: createLikeDto.cat_id,
+      cat_url: createLikeDto.cat_url,
       user_login: user.login,
     });
 
     const errors = await validate(newLike);
 
     if (errors.length > 0) {
-      throw new BadRequestException('Invalid input');
+      // throw new BadRequestException('Invalid input');
+      throw new BadRequestException(errors);
     }
 
     if ((await this.findOne(newLike.user_login, newLike.cat_id)) !== null) {
@@ -32,8 +34,12 @@ export class LikesService {
     return this.likesRepository.save(newLike);
   }
 
-  findAll() {
-    return this.likesRepository.find();
+  async findUserLikes(user: User) {
+    const login = user.login;
+
+    return this.likesRepository.find({
+      where: { user_login: login },
+    });
   }
 
   async findOne(login: string, cat_id: string): Promise<Like | null> {

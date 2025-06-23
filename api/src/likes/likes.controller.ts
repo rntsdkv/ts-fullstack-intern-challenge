@@ -18,11 +18,12 @@ export class LikesController {
   @UseGuards(AuthGuard)
   @HttpCode(201)
   @Get()
-  findAll() {
-    return this.likesService.findAll();
+  findUserLikes(@Request() request) {
+    return this.likesService.findUserLikes(request.user);
   }
 
   @UseGuards(AuthGuard)
+  @HttpCode(200)
   @Post()
   create(@Request() request, @Body() createLikeDto: CreateLikeDto) {
     return this.likesService.create(createLikeDto, request.user);
