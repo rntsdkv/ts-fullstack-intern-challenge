@@ -36,6 +36,9 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 
 COPY --chown=node:node . .
 
+RUN npm install @nestjs/jwt @nestjs/passport passport-jwt class-validator
+RUN npm install -D @types/passport-jwt
+
 # Run the build command which creates the production bundle
 RUN npm run build
 

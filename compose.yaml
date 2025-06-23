@@ -1,4 +1,3 @@
-version: '3.7'
 services:
   proxy:
     container_name: cat-pinterest-proxy
@@ -25,6 +24,11 @@ services:
       - cat-pinterest-net
     environment:
       NODE_ENV: prod
+      DB_H0ST: cat-pinterest-api-pg
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: support_lk_db
     depends_on:
       cat-pinterest-api-pg:
         condition: service_healthy
@@ -43,9 +47,11 @@ services:
     container_name: cat-pinterest-api-pg
     image: postgres:14
     networks:
-      - cat-pinterest-net
+      cat-pinterest-net:
+        - aliases:
+            - postgres
     environment:
-      POSTGRES_PASSWORD: 1
+      POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: support_lk_db
     #      PG_DATA: /var/lib/postgresql/data
