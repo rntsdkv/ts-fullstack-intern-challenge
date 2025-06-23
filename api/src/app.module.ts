@@ -22,6 +22,7 @@ dotenv.config();
       password: process.env.DB_PASSWORD || 'postgres',
       database: process.env.DB_DATABASE || 'support_lk_db',
       entities: [User, Like],
+      synchronize: true,
       autoLoadEntities: true,
     }),
     AuthModule,
