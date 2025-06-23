@@ -49,6 +49,7 @@ export default function Following() {
           liked={true}
         ></Card>
       ))}
+      {cards.length == 0 && "У вас пока нет любимых котиков"}
     </div>
   )
 }

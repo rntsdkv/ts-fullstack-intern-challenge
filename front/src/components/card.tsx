@@ -3,9 +3,9 @@ import {deleteLike, postLike} from "../api.ts";
 import axios from "axios";
 
 enum LikeState {
-  BORDER = '../../public/favorite_border.svg',
-  HOVER = '../../public/favorite_hovered.svg',
-  FILL = '../../public/favorite_filled.svg'
+  BORDER = '/favorite_border.svg',
+  HOVER = '/favorite_hovered.svg',
+  FILL = '/favorite_filled.svg'
 }
 
 export default function Card(props: {id: string, url: string, liked: boolean}) {
