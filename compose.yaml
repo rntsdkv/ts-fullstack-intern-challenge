@@ -1,19 +1,19 @@
 services:
-  proxy:
-    container_name: cat-pinterest-proxy
-    image: nginx:1.24-alpine-slim
-    volumes:
-      - type: bind
-        source: ./nginx.conf
-        target: /etc/nginx/nginx.conf
-        read_only: true
-    depends_on:
-      cat-pinterest-api:
-        condition: service_started
-    ports:
-      - "8080:80"
+  cat-pinterest-api-pg:
+    container_name: cat-pinterest-api-pg
+    image: postgres:14
     networks:
       - cat-pinterest-net
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: support_lk_db
+    #      PG_DATA: /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 2s
+      timeout: 5s
+      retries: 10
 
   cat-pinterest-api:
     container_name: cat-pinterest-api
@@ -24,11 +24,14 @@ services:
       - cat-pinterest-net
     environment:
       NODE_ENV: prod
-      DB_H0ST: cat-pinterest-api-pg
+      DB_HOST: cat-pinterest-api-pg
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_DATABASE: support_lk_db
+      FRONT_BASE_URL: http://localhost
+    ports:
+      - "3000:3000"
     depends_on:
       cat-pinterest-api-pg:
         condition: service_healthy
@@ -40,26 +43,15 @@ services:
       context: ./front/
     networks:
       - cat-pinterest-net
+    ports:
+      - "80:80"
     environment:
       NODE_ENV: prod
-
-  cat-pinterest-api-pg:
-    container_name: cat-pinterest-api-pg
-    image: postgres:14
-    networks:
-      cat-pinterest-net:
-        - aliases:
-            - postgres
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: support_lk_db
-    #      PG_DATA: /var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 2s
-      timeout: 5s
-      retries: 10
+      VITE_API_IP: cat-pinterest-api
+      VITE_API_HOST: 3000
+      VITE_API_BASE_URL: http://cat-pinterest-api:3000
+    env_file:
+      - .env
 
 networks:
   cat-pinterest-net:
